@@ -1,4 +1,4 @@
-package lotto;
+package lottostore;
 
 import java.util.Arrays;
 
