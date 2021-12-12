@@ -24,7 +24,7 @@ public class Calculators {
 		
 		System.out.println("########## Calculator On ##########");
 		
-
+		firstOperandString = firstOperlandInput();
 		
 
 		
@@ -127,7 +127,7 @@ public class Calculators {
 
 	}
 	
-	public String firstOperlandInput() {
+	public static String firstOperlandInput() {
 		String firstOperandString = "";
 		
 		Scanner scanner = new Scanner(System.in);
