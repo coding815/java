@@ -1,5 +1,5 @@
 package lottostore;
 
-public class Caculator {
+public class Calculator {
 
 }
