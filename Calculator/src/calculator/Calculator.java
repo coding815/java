@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Scanner;
 
 public class Calculator {
+	// enum으로 처리 - 행위를  명확하게 알 수 있다.
 	private static final int ARITHMETIC_OPERATOR_ADDITION = 1;
 	private static final int ARITHMETIC_OPERATOR_SUBTRACTION = 2;
 	private static final int ARITHMETIC_OPERATOR_MULTIPLICATION = 3;
@@ -19,14 +20,14 @@ public class Calculator {
 				
 		Scanner scanner = new Scanner(System.in);
 		
-		while(!isNumeric(firstOperandString)) {
-		
+		while(true) {
 			System.out.print("첫번째 수를 입력하세요.: ");
 			
 			firstOperandString = scanner.next();
 		
 			if(isNumeric(firstOperandString)) {
 				System.out.println("첫번째 입력값: " + firstOperandString);
+				break;
 			} else {
 				System.out.println("입력하신 값은 숫자가 아닙니다.");
 			}
@@ -109,7 +110,7 @@ public class Calculator {
 
 	}
 	
-	public static boolean isNumeric(String string) {
+	private static boolean isNumeric(String string) {
 		try {
 	     	Double.parseDouble(string);
 	    	return true;
@@ -118,7 +119,7 @@ public class Calculator {
 	    }
 	}
 	
-	public static boolean isArithmeticOperator(String string) {
+	private static boolean isArithmeticOperator(String string) {
 		String checkArithmeticOperator = "[1-5]";
 		
 //		Matcher matcher;
