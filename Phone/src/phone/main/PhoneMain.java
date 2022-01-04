@@ -1,45 +1,47 @@
 package phone.main;
 
+import phone.connector.PhoneConnectorEnum;
 import phone.sender.Sender;
 import phone.status.PhoneStatusEnum;
 
 public class PhoneMain {
 	
 	public static void main(String[] args) {
+		PhoneConnectorEnum phoneConnectorEnum = PhoneConnectorEnum.DISCONNECTED;
 		PhoneStatusEnum phoneStatusEnum = PhoneStatusEnum.NORMAL;
-		
+
 		while (phoneStatusEnum == PhoneStatusEnum.NORMAL) {
 		
 			Sender sender = new Sender();
 			
 			phoneStatusEnum = sender.pickUpPhone();
-			System.out.println("phoneStatusEnum: " + phoneStatusEnum);
 			
-			if (phoneStatusEnum == PhoneStatusEnum.PICKUP) {
-				
-				phoneStatusEnum = sender.inputPhoneNumbers();
+			if (phoneStatusEnum == PhoneStatusEnum.WAITING) {
+				phoneConnectorEnum = PhoneConnectorEnum.CONNECTED;
+				System.out.println("phoneStatusEnum: " + phoneStatusEnum);
+				phoneStatusEnum = sender.inputPhoneNumber();
 				System.out.println("phoneStatusEnum: " + phoneStatusEnum);
 			}
 			
-			boolean isCheckCall = false;
+			boolean isResponseCheck = false;
 			
 			if (phoneStatusEnum == PhoneStatusEnum.CALLING) {
-				isCheckCall = sender.call();
+				isResponseCheck = sender.isResponseCheck(); 
 			}
 			
-			if (isCheckCall == true) {
-				System.out.println("not response calling.");
-				System.out.println("phoneStatusEnum: " + phoneStatusEnum);
+			if (isResponseCheck == true) {
+				System.out.println("### not respond calling. ###");
 				phoneStatusEnum = PhoneStatusEnum.NORMAL;
-				System.out.println("phoneStatusEnum: " + phoneStatusEnum);
 			}
 		
 		}
 		
 		if (phoneStatusEnum == PhoneStatusEnum.HANGUP) {
-			System.out.println("return sender to phone.");
+			System.out.println("### hang up the phone. ###");
 			phoneStatusEnum = PhoneStatusEnum.NORMAL;
+			phoneConnectorEnum = PhoneConnectorEnum.DISCONNECTED;
 			System.out.println("phoneStatusEnum: " + phoneStatusEnum);
+			System.out.println("phoneConnectorEnum: " + phoneConnectorEnum);
 		}
 	}
 

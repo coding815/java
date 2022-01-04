@@ -4,29 +4,30 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import phone.button.PhoneButtonEnum;
+import phone.connector.PhoneConnectorEnum;
+import phone.response.ResponseCall;
 import phone.status.PhoneStatusEnum;
 
 public class Sender {
-	
+
 	PhoneStatusEnum phoneStatusEnum = PhoneStatusEnum.NORMAL;
-	PhoneButtonEnum phoneButtonEnum = PhoneButtonEnum.INIT;
 	
 	public PhoneStatusEnum pickUpPhone() {
 		if (phoneStatusEnum == PhoneStatusEnum.NORMAL) {
-			phoneStatusEnum = PhoneStatusEnum.PICKUP;
-			System.out.println("du du du . . .");
+			phoneStatusEnum = PhoneStatusEnum.WAITING;
+			System.out.println("### du du du . . . ###");
 			return phoneStatusEnum;
 		}
 		
 		return phoneStatusEnum;
 	}
 	
-	public PhoneStatusEnum inputPhoneNumbers() {
+	public PhoneStatusEnum inputPhoneNumber() {
 		Scanner scanner = new Scanner(System.in);
 		
 		String inputNumberString = "";
 		
-		while(phoneStatusEnum == PhoneStatusEnum.PICKUP) {
+		while(phoneStatusEnum == PhoneStatusEnum.WAITING) {
 		
 			System.out.print("전화번호를 입력하세요.: ");
 			
@@ -50,39 +51,13 @@ public class Sender {
 		return phoneStatusEnum;
 	}
 	
-	public boolean call() {
+	public boolean isResponseCheck() {
 		
-		try {
-			for (int i = 0; i < 3; i++) {
-				TimeUnit.SECONDS.sleep(1);
-				System.out.println("dda r r rng ! ! !");
-				
-				int responseCalling = responseCalling();
-				
-				if (responseCalling == 10) {
-					System.out.println("hello?!");
-					return false;
-				}
-			}
-		}catch(Exception e) {
-			System.out.println(e);
-		}
+		ResponseCall responseCall = new ResponseCall();
 		
-		return true;
-	}
-	
-	public int responseCalling() {
-		int responseRandomSetting = 0;
-				
-		while(responseRandomSetting == 0) {
-			double randomValue = Math.random();
-			int intValue = (int)(randomValue * 10) + 1;
-//			System.out.println("intValue: " + intValue);
-			responseRandomSetting = intValue;
-		}
-		System.out.println("responseRandomSetting: " + responseRandomSetting);
+		boolean isResponseCheck = responseCall.isResponseCalling();
 		
-		return responseRandomSetting;
+		return isResponseCheck;
 	}
 	
 	public boolean isCheckHangUp(String string) {
@@ -96,7 +71,7 @@ public class Sender {
 	}
 	
 	public boolean isCheckNumber(String string) {
-		String regExp = "(02|031|032|033|041|042|043|044|051||052|053|054|055|061|062|063|064|010|070)\\d{3,4}\\d{4}";
+		String regExp = "(02|031|032|033|041|042|043|044|051|052|053|054|055|061|062|063|064|010|070)\\d{3,4}\\d{4}";
 		
 		if (string.matches(regExp)) {
 			

@@ -2,7 +2,7 @@ package phone.status;
 
 public enum PhoneStatusEnum {
 	NORMAL,
-	PICKUP,
+	WAITING,
 	CALLING,
 	RINGING,
 	HANGUP
