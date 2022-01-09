@@ -8,7 +8,7 @@ public class Main {
 		
 		Phone phone = new Phone();
 
-		phone.phoneSender.transmitVoice("");
+		phone.phoneButton.pressButton();
 		
 	}
 

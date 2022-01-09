@@ -2,7 +2,7 @@ package button;
 
 public class ButtonModel {
 	
-	String pressButton;
+	public String pressButton;
 	
 	public String getPressButton(String pressButton) {
 		return pressButton;
