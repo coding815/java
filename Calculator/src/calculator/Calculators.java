@@ -14,22 +14,69 @@ public class Calculators {
 	
 	public static void main(String[] args) {
 		
-		String firstOperandString;
-		String secondOperandString;
-		String arithmeticOperatorString;
-		int arithmeticOperatorInt;
-		String yesOrNoString;
+		String firstOperandString = "";
+		String secondOperandString = "";
+		String arithmeticOperatorString = "";
+		int arithmeticOperatorInt = 0;
+		String yesOrNoString = "";
 				
 		Scanner scanner = new Scanner(System.in);
 		
 		System.out.println("########## Calculator On ##########");
 		
-		firstOperandString = inputFirstOperland();
+		firstOperandString = firstOperlandInput();
 		
-		arithmeticOperatorString = inputArithmeticOperator();
+
 		
-		firstOperandString = inputSecondOperland();
+		while(!isArithmeticOperator(arithmeticOperatorString)) {
 		
+			System.out.println("계산할 부호를 선택하세요. (숫자로 입력 후 엔터)");
+			System.out.print("1. +(더하기) | 2. -(빼기) | 3. *(곱하기) | 4. /(나누기) | 5. %(나머지): ");
+			
+			arithmeticOperatorString = scanner.next();
+			
+			if(isArithmeticOperator(arithmeticOperatorString)) {
+				arithmeticOperatorInt = Integer.parseInt(arithmeticOperatorString);
+			} else {
+				System.out.println("입력하신 값은 유효하지 않은 범위입니다.");
+			}
+			
+			String checkAarithmeticOPERATOR = "";
+			
+			switch(arithmeticOperatorInt) {
+				case ARITHMETIC_OPERATOR_ADDITION:
+					checkAarithmeticOPERATOR = "1. +(더하기)";
+					break;
+				case ARITHMETIC_OPERATOR_SUBTRACTION:
+					checkAarithmeticOPERATOR = "2. -(빼기)";
+					break;
+				case ARITHMETIC_OPERATOR_MULTIPLICATION:
+					checkAarithmeticOPERATOR = "3. *(곱하기)";
+					break;
+				case ARITHMETIC_OPERATOR_DIVISION:
+					checkAarithmeticOPERATOR = "4. /(나누기)";
+					break;
+				case ARITHMETIC_OPERATOR_REMAINDER:
+					checkAarithmeticOPERATOR = "5. %(나머지)";
+					break;
+			}
+			
+			System.out.println("입력된 부호: " + checkAarithmeticOPERATOR);
+		}
+		
+		while(!isNumeric(secondOperandString)) {
+			
+			System.out.print("두번째 수를 입력하세요.: ");
+			
+			secondOperandString = scanner.next();
+		
+			if(isNumeric(secondOperandString)) {
+				System.out.println("두번째 입력값: " + secondOperandString);
+			} else {
+				System.out.println("입력하신 값은 숫자가 아닙니다.");
+			}
+			
+		}
 		
 		BigDecimal firstBigDecimal = new BigDecimal(firstOperandString);
 		BigDecimal secondBigDecimal = new BigDecimal(secondOperandString);
@@ -80,7 +127,7 @@ public class Calculators {
 
 	}
 	
-	public static String inputFirstOperland() {
+	public static String firstOperlandInput() {
 		String firstOperandString = "";
 		
 		Scanner scanner = new Scanner(System.in);
@@ -101,71 +148,6 @@ public class Calculators {
 		}
 		
 		return firstOperandString;
-	}
-	
-	public static String inputSecondOperland() {
-		String secondOperandString = "";
-		
-		Scanner scanner = new Scanner(System.in);
-		
-		while(!isNumeric(secondOperandString)) {
-			
-			System.out.print("두번째 수를 입력하세요.: ");
-			
-			secondOperandString = scanner.next();
-		
-			if(isNumeric(secondOperandString)) {
-				System.out.println("두번째 입력값: " + secondOperandString);
-			} else {
-				System.out.println("입력하신 값은 숫자가 아닙니다.");
-			}
-			
-		}
-	}
-	
-	public static String inputArithmeticOperator() {
-		Scanner scanner = new Scanner(System.in);
-		
-		String arithmeticOperatorString = "";
-		int arithmeticOperatorInt = 0;
-		
-		while(!isArithmeticOperator(arithmeticOperatorString)) {
-			
-			System.out.println("계산할 부호를 선택하세요. (숫자로 입력 후 엔터)");
-			System.out.print("1. +(더하기) | 2. -(빼기) | 3. *(곱하기) | 4. /(나누기) | 5. %(나머지): ");
-			
-			arithmeticOperatorString = scanner.next();
-			
-			if(isArithmeticOperator(arithmeticOperatorString)) {
-				arithmeticOperatorInt = Integer.parseInt(arithmeticOperatorString);
-			} else {
-				System.out.println("입력하신 값은 유효하지 않은 범위입니다.");
-			}
-			
-			String checkAarithmeticOPERATOR = "";
-			
-			switch(arithmeticOperatorInt) {
-				case ARITHMETIC_OPERATOR_ADDITION:
-					checkAarithmeticOPERATOR = "1. +(더하기)";
-					break;
-				case ARITHMETIC_OPERATOR_SUBTRACTION:
-					checkAarithmeticOPERATOR = "2. -(빼기)";
-					break;
-				case ARITHMETIC_OPERATOR_MULTIPLICATION:
-					checkAarithmeticOPERATOR = "3. *(곱하기)";
-					break;
-				case ARITHMETIC_OPERATOR_DIVISION:
-					checkAarithmeticOPERATOR = "4. /(나누기)";
-					break;
-				case ARITHMETIC_OPERATOR_REMAINDER:
-					checkAarithmeticOPERATOR = "5. %(나머지)";
-					break;
-			}
-			
-			System.out.println("입력된 부호: " + checkAarithmeticOPERATOR);
-		}
-		
-
 	}
 	
 	public static boolean isNumeric(String string) {
