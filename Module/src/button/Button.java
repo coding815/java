@@ -2,8 +2,9 @@ package button;
 
 import java.util.Scanner;
 
-public class Button {
+public class Button implements ButtonI {
 
+	@Override
 	public String pressButton() {
 		
 		Scanner scanner = new Scanner(System.in);
@@ -22,4 +23,5 @@ public class Button {
 		
 		return inputButtonString;
 	}
+
 }

@@ -1,28 +1,17 @@
 package phone;
 
-import java.util.Scanner;
-
 import button.Button;
-import button.ButtonModel;
 
 public class PhoneButton extends Button {
 	
+	@Override
 	public String pressButton() {
 		
-		ButtonModel buttonModel = new ButtonModel();
-		
-		String pressButtonString = buttonModel.getPressButton();
-		
-		pressButtonString = "";
+		String pressButtonString = "";
 		
 		while (!isCheckNumber(pressButtonString)) {
 			
-			Scanner scanner = new Scanner(System.in);
-			
-			System.out.print("버튼을 누릅니다.: ");
-			
-			pressButtonString = scanner.next();
-//			System.out.println("inputButtonString: " + buttonModel.pressButton);
+			pressButtonString = super.pressButton();
 			
 			if(!isCheckNumber(pressButtonString)) {
 				System.out.println("전화기에서 지원하지 않는 버튼입니다.");
