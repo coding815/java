@@ -1,6 +1,5 @@
 package phone;
 
-import button.Button;
 import connector.Connector;
 import receiver.Receiver;
 import sender.Sender;
