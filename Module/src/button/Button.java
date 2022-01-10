@@ -10,13 +10,15 @@ public class Button {
 		
 		ButtonModel buttonModel = new ButtonModel();
 		
-		String inputButtonString = buttonModel.pressButton;
+		String inputButtonString = buttonModel.getPressButton();
 		
 		inputButtonString = "";
 		
 		System.out.print("버튼을 누릅니다.: ");
 		
 		inputButtonString = scanner.next();
+		
+		buttonModel.setPressButton(inputButtonString);
 		
 		return inputButtonString;
 	}

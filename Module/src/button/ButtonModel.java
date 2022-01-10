@@ -2,13 +2,14 @@ package button;
 
 public class ButtonModel {
 	
-	public String pressButton;
-	
-	public String getPressButton(String pressButton) {
+	private String pressButton;
+
+	public String getPressButton() {
 		return pressButton;
 	}
-	
+
 	public void setPressButton(String pressButton) {
 		this.pressButton = pressButton;
 	}
+
 }

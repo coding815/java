@@ -11,24 +11,26 @@ public class PhoneButton extends Button {
 		
 		ButtonModel buttonModel = new ButtonModel();
 		
-		buttonModel.pressButton = "";
+		String pressButtonString = buttonModel.getPressButton();
 		
-		while (!isCheckNumber(buttonModel.pressButton)) {
+		pressButtonString = "";
+		
+		while (!isCheckNumber(pressButtonString)) {
 			
 			Scanner scanner = new Scanner(System.in);
 			
 			System.out.print("버튼을 누릅니다.: ");
 			
-			buttonModel.pressButton = scanner.next();
+			pressButtonString = scanner.next();
 //			System.out.println("inputButtonString: " + buttonModel.pressButton);
 			
-			if(!isCheckNumber(buttonModel.pressButton)) {
+			if(!isCheckNumber(pressButtonString)) {
 				System.out.println("전화기에서 지원하지 않는 버튼입니다.");
 			}
 		}
 		
-		System.out.println("입력된 버튼: " + buttonModel.pressButton);
-		return buttonModel.pressButton;
+		System.out.println("입력된 버튼: " + pressButtonString);
+		return pressButtonString;
 	}
 	
 	public boolean isCheckNumber(String string) {
