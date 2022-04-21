@@ -1,0 +1,2 @@
+module Junit4Test {
+}
