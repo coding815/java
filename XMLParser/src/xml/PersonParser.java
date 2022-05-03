@@ -11,7 +11,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class DemoXMLParser {
+public class PersonParser {
 	
 	public void getXMLData(String xmlFile) throws ParserConfigurationException, SAXException, IOException {
 		

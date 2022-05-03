@@ -6,11 +6,11 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-public class DemoXMLParserMain {
+public class PersonParserMain {
 
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
-		DemoXMLParser demoXMLParser = new DemoXMLParser();
-		demoXMLParser.getXMLData("src/xml/Person.xml");
+		PersonParser personParser = new PersonParser();
+		personParser.getXMLData("src/xml/Person.xml");
 	}
 
 }

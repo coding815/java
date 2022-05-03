@@ -12,7 +12,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class DOMParser {
+public class SampleParser {
 
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
 
