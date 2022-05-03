@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class name="depth step three">
+	<teacher name="t1"/>
+	<teacher name="t2"/>
+	<student name="s1">
+    	<id num="1">
+    	    <korean score="70"/>
+    	    <math score="80"/>
+    	    <english score="80"/>
+    	</id>
+	</student>
+	<student name="s2">
+    	<id num="2">
+    	   	<korean score="85"/>
+    	    <math score="70"/>
+    	    <english score="100"/>
+    	</id>
+	</student>
+	<student name="s3">
+    	<id num="3">
+    	   	<korean score="95"/>
+    	    <math score="85"/>
+    	    <english score="60"/>
+    	</id>
+	</student>
+</class>

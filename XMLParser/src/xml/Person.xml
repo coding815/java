@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class name="how to use xml parser">
+	<person sex="w">
+    	<name>Elsa</name>
+    	<age>25</age>
+	</person>
+	<person sex="m">
+    	<name>Bob</name>
+    	<age>28</age>
+	</person>
+</class>
