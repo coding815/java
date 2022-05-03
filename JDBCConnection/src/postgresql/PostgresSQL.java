@@ -15,36 +15,47 @@ public class PostgresSQL {
 		String user = "epc";
 		String password = "epc";
 		
-		try
-		{
-			Connection connect = null;
-			connect = DriverManager.getConnection(connUrl, user, password);
-			if (connect != null) {
-				System.out.println("Connection successful!!!");
-//				System.out.println("connect: " + connect);
-			} else {
-				System.out.println("no connection...");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-//		try (Connection connection = DriverManager.getConnection(connUrl, user, password);) {
-//			Statement stmt = connection.createStatement();
-//			ResultSet rs = stmt.executeQuery("SELECT VERSION() AS");
-//			
-//			while (rs.next()) {
-//				String version = rs.getString("version");
-//				
-//				System.out.println(version);
+//		try
+//		{
+//			Connection connect = null;
+//			connect = DriverManager.getConnection(connUrl, user, password);
+//			if (connect != null) {
+//				System.out.println("Connection successful!!!");
+//
+//			} else {
+//				System.out.println("no connection...");
 //			}
-//			
-//			rs.close();
-//			stmt.close();
-//			connection.close();
 //		} catch (SQLException e) {
 //			e.printStackTrace();
 //		}
 		
+		try (Connection conn = DriverManager.getConnection(connUrl, user, password);) {
+			if (conn != null) {
+				System.out.println("Connected to the database !!!");
+				
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery("SELECT * FROM tb_node_info");
+				
+				while (rs.next()) {
+					int nodeType = rs.getInt("node_type");
+					String nodeName = rs.getString("node_name");
+					String ipaddress = rs.getString("ipaddress");
+					
+					System.out.println("node_type: " + nodeType + ", " +
+							"node_name: " + nodeName + ", " +
+							"ipaddress: " + ipaddress);
+				}
+				
+				rs.close();
+				stmt.close();
+				conn.close();
+			} else {
+				System.out.println("Failed to make connection ...");
+			}
+		} catch (SQLException e) {
+			System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
