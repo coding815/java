@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root name="db_test">
+	<table name="tb_test_one">
+		<sql date="2022-05-01" author="zyoulee">
+            CREATE TABLE tb_test (
+                id numeric NOT NULL,
+                name varchar(24) NOT NULL,
+                PRIMARY KEY (id)
+            );
+        </sql>
+        <sql date="2022-05-02" author="zyoulee">
+            ALTER TABLE tb_test_one ADD COLUMN type varchar(32) null DEFAULT '';
+        </sql>
+    </table>
+    <table name="tb_test_two">
+        <sql date="2022-05-03" author="zjeokwa">
+            CREATE TABLE tb_test_two (
+                id numeric NOT NULL,
+                ipaddress varchar(24) NOT NULL,
+                PRIMARY KEY (id, ipaddress)
+            );
+        </sql>
+		<sql date="2022-05-04" author="zjeokwa">
+            ALTER TABLE tb_test_two RENAME COLUMN id to no;
+		</sql>
+	</table>
+</root>
