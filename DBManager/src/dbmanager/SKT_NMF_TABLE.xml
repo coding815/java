@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<table name="alarm">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.alarm (
+				logid numeric NULL DEFAULT 0,
+				nodeid numeric NULL DEFAULT 0,
+				specificproblem varchar(500) NULL DEFAULT ''::character varying,
+				severity varchar(10) NULL DEFAULT ''::character varying,
+				managedobject varchar(100) NULL DEFAULT ''::character varying,
+				"location" varchar(200) NULL DEFAULT ''::character varying,
+				hostname varchar(64) NULL DEFAULT ''::character varying,
+				netype int4 NULL DEFAULT 0,
+				alarmcode varchar(20) NULL DEFAULT ''::character varying,
+				additionalmsg varchar(4000) NULL DEFAULT ''::character varying,
+				ackuser varchar(16) NULL DEFAULT ''::character varying,
+				acktime numeric NULL DEFAULT 0,
+				ackstate varchar(100) NULL DEFAULT ''::character varying,
+				alarmtime numeric NULL DEFAULT 0,
+				hmieventtime numeric NULL DEFAULT 0,
+				alarmid varchar(50) NULL DEFAULT ''::character varying,
+				recoverytime numeric NULL DEFAULT 0,
+				uuid varchar(64) NULL DEFAULT ''::character varying,
+				switch_name varchar(32) NULL DEFAULT ''::character varying,
+				switch_port varchar(32) NULL DEFAULT ''::character varying
+			);
+			CREATE INDEX idx_alarm_01 ON alarm USING btree (alarmid);
+			CREATE INDEX idx_alarm_02 ON alarm USING btree (location);
+			CREATE INDEX idx_alarm_03 ON alarm USING btree (recoverytime);
+			CREATE INDEX idx_alarm_04 ON alarm USING btree (hmieventtime);
+			CREATE INDEX idx_alarm_05 ON alarm USING btree (alarmtime);
+        </sql>
+    </table>
+    <table name="eventhistory">
+        <sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.eventhistory (
+				logid numeric NULL DEFAULT 0,
+				nodeid numeric NULL DEFAULT 0,
+				"location" varchar(200) NULL DEFAULT ''::character varying,
+				netype int4 NULL DEFAULT 0,
+				eventid varchar(20) NULL DEFAULT ''::character varying,
+				specificproblem varchar(500) NULL DEFAULT ''::character varying,
+				eventtype int4 NULL DEFAULT 0,
+				"recovery" int4 NULL DEFAULT 0,
+				eventtypeinfo varchar(15) NULL DEFAULT ''::character varying,
+				ackuser varchar(16) NULL DEFAULT ''::character varying,
+				neeventtime numeric NULL DEFAULT 0,
+				hmieventtime numeric NULL DEFAULT 0,
+				additionalmsg varchar(4000) NULL DEFAULT ''::character varying,
+				alarmkind numeric NULL DEFAULT 0,
+				ossalarmseq numeric NULL DEFAULT 0,
+				switch_name varchar(32) NULL DEFAULT ''::character varying,
+				switch_port varchar(32) NULL DEFAULT ''::character varying
+			);
+			CREATE INDEX idx_eventhistory_01 ON eventhistory USING btree (hmieventtime);
+			CREATE INDEX idx_eventhistory_02 ON eventhistory USING btree (neeventtime);
+        </sql>
+	</table>
+</root>

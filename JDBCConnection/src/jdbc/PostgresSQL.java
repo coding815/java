@@ -1,4 +1,4 @@
-package postgresql;
+package jdbc;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,7 +11,8 @@ public class PostgresSQL {
 	public static void main(String[] args) throws ClassNotFoundException {
 		Class.forName("org.postgresql.Driver");
 		
-		String connUrl = "jdbc:postgresql://10.180.93.60:5432/nmf";
+		String connUrl = "jdbc:postgresql://10.180.93.64:5432/skt_dev_tmp";
+//		String connUrl = "jdbc:postgresql://10.180.93.60:5432/nmf";
 		String user = "epc";
 		String password = "epc";
 		
