@@ -23,7 +23,7 @@ public class DBTableParserDivision {
 		// XML ¹®¼­ ÆÄ½Ì
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = builderFactory.newDocumentBuilder();
-		Document document = builder.parse("src/dbmanager/db_schema.xml");
+		Document document = builder.parse("src/test/java/com/ericsson/nmf/ejb/manager/dbmanager/db_schema.xml");
 		
 		return getDBTableList(dbTableList, document);
 	}
@@ -53,6 +53,7 @@ public class DBTableParserDivision {
 //				System.out.println("node name: " + nodeName);
 				
 				DBTableDTO dbTableDTO = getDBTableInfo(element, nodeName);
+				
 				dbTableList.add(dbTableDTO);
 			}
 		}
@@ -62,12 +63,13 @@ public class DBTableParserDivision {
 		DBTableDTO dbTableDTO = new DBTableDTO();
 		
 		if (nodeName.equals("table")) {
-			System.out.println("table: " + element.getAttribute("name"));
+//			System.out.println("table: " + element.getAttribute("name"));
 			String tableName = element.getAttribute("name");
 			dbTableDTO.setName(tableName);
 			
 			enterSecondChild(element, dbTableDTO);
 		}
+		
 		return dbTableDTO;
 	}
 
@@ -87,7 +89,8 @@ public class DBTableParserDivision {
 				String textContent = element2.getTextContent().trim();
 				dbTableDTO.setQuery(textContent);
 			}	
-			System.out.println("\n");
+//			System.out.println("\n");
 		}
 	}
+	
 }

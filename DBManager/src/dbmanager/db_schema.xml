@@ -56,4 +56,158 @@
 			CREATE INDEX idx_eventhistory_02 ON eventhistory USING btree (neeventtime);
         </sql>
 	</table>
+	<table name="tb_alarm_model">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_alarm_model (
+				node_id numeric NOT NULL DEFAULT '0'::numeric,
+				netype numeric NOT NULL DEFAULT '0'::numeric,
+				"version" varchar(16) NULL DEFAULT NULL::character varying,
+				alarmcode varchar(32) NULL DEFAULT NULL::character varying,
+				severity varchar(32) NOT NULL,
+				specificproblem varchar(128) NOT NULL,
+				probablecause varchar(64) NULL DEFAULT NULL::character varying,
+				CONSTRAINT tb_alarm_model_pkey PRIMARY KEY (node_id, netype, severity, specificproblem)
+			);
+		</sql>
+	</table>
+	<table name="tb_audio_file">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_audio_file (
+				"name" varchar(32) NOT NULL,
+				file_name varchar(256) NOT NULL,
+				audio_file bytea NULL,
+				CONSTRAINT tb_audio_file_pkey PRIMARY KEY (name)
+			);
+		</sql>
+	</table>
+	<table name="tb_batch_command">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_batch_command (
+				batch_group_id numeric NOT NULL,
+				command_no numeric NOT NULL DEFAULT 0,
+				command text NOT NULL,
+				wait_time numeric NOT NULL DEFAULT 0,
+				node_name varchar(32) NOT NULL DEFAULT ''::character varying,
+				CONSTRAINT tb_batch_command_pk PRIMARY KEY (batch_group_id, command_no)
+			);
+		</sql>
+	</table>
+	<table name="tb_batch_command_history">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_batch_command_history (
+				batch_group_id numeric NOT NULL,
+				batch_group_name varchar(64) NULL DEFAULT NULL::character varying,
+				batch_user varchar(64) NULL DEFAULT NULL::character varying,
+				start_time_str varchar(64) NOT NULL DEFAULT NULL::character varying,
+				command_no int4 NOT NULL,
+				command text NULL DEFAULT NULL::character varying,
+				"result" varchar(64) NULL DEFAULT NULL::character varying,
+				result_output text NULL,
+				CONSTRAINT tb_batch_command_history_pk PRIMARY KEY (batch_group_id, start_time_str, command_no)
+			);
+		</sql>
+	</table>
+	<table name="tb_batch_group">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_batch_group (
+				batch_group_id serial4 NOT NULL,
+				batch_group_name varchar(64) NOT NULL,
+				activation varchar(32) NOT NULL DEFAULT 'STOP'::character varying,
+				start_time timestamp NOT NULL DEFAULT now(),
+				end_time timestamp NULL DEFAULT now(),
+				batch_cycle numeric NOT NULL DEFAULT 0,
+				interval_class varchar(32) NOT NULL DEFAULT 'SECOND'::character varying,
+				interval_time numeric NOT NULL DEFAULT 0,
+				batch_user varchar(64) NOT NULL,
+				CONSTRAINT tb_batch_group_un UNIQUE (batch_group_name),
+				CONSTRAINT tb_batch_group_un_id UNIQUE (batch_group_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_command_history">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_command_history (
+				node_id numeric NOT NULL,
+				user_id varchar(32) NOT NULL,
+				category numeric NOT NULL,
+				command_num varchar(16) NOT NULL,
+				command varchar(128) NOT NULL,
+				param varchar(2048) NOT NULL,
+				"result" numeric NOT NULL,
+				fail_reason text NULL DEFAULT ''::text,
+				command_time timestamp NULL DEFAULT now(),
+				result_detail text NULL DEFAULT ''::text
+			);
+		</sql>
+	</table>
+	<table name="tb_dbsync_switch">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_dbsync_switch (
+				efa_id numeric NOT NULL,
+				switch_ip varchar(24) NOT NULL,
+				discovery_interval varchar(64) NULL DEFAULT ''::character varying,
+				last_discovery_time varchar(64) NULL DEFAULT ''::character varying,
+				discovery_reason varchar(64) NULL DEFAULT ''::character varying,
+				CONSTRAINT tb_dbsync_switch_pkey PRIMARY KEY (efa_id, switch_ip)
+			);
+		</sql>
+	</table>
+	<table name="tb_efa_service_status">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_efa_service_status (
+				service_name varchar(64) NOT NULL,
+				node_id numeric NOT NULL,
+				tpvm_node_name varchar(32) NOT NULL,
+				ready varchar(8) NULL,
+				status varchar(16) NULL,
+				restarts varchar(8) NULL,
+				age varchar(8) NULL,
+				ipaddress varchar(16) NULL,
+				nominated_node varchar(64) NULL,
+				readiness_gates varchar(64) NULL,
+				collect_time varchar(24) NULL,
+				CONSTRAINT tb_efa_service_status_pkey PRIMARY KEY (service_name, node_id, tpvm_node_name)
+			);
+		</sql>
+	</table>
+	<table name="tb_efa_status">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_efa_status (
+				node_id numeric NOT NULL,
+				tpvm_node_name varchar(32) NOT NULL,
+				"role" varchar(16) NULL,
+				status varchar(16) NULL,
+				ipaddress varchar(16) NULL,
+				collect_time varchar(24) NULL,
+				CONSTRAINT tb_efa_status_pkey PRIMARY KEY (node_id, tpvm_node_name)
+			);
+		</sql>
+	</table>
+	<table name="tb_event_utility">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_event_utility (
+				user_id varchar(16) NOT NULL,
+				node_id numeric NOT NULL DEFAULT '0'::numeric,
+				netype numeric NOT NULL DEFAULT '0'::numeric,
+				alarmcode varchar(20) NOT NULL,
+				severity varchar(32) NOT NULL,
+				"name" varchar(32) NOT NULL DEFAULT ''::character varying,
+				inhibit bool NOT NULL DEFAULT false,
+				CONSTRAINT tb_event_utility_pkey PRIMARY KEY (user_id, node_id, netype, alarmcode)
+			);
+		</sql>
+	</table>
+	<table name="tb_network_auto_log">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_network_auto_log (
+				logid serial4 NOT NULL,
+				instance_name varchar(256) NOT NULL,
+				start_time timestamp NULL,
+				end_time timestamp NULL,
+				"result" numeric NOT NULL DEFAULT '-1'::integer,
+				result_detail text NULL DEFAULT ''::text,
+				CONSTRAINT tb_network_auto_log_pk PRIMARY KEY (logid)
+			);
+		</sql>
+	</table>
 </root>

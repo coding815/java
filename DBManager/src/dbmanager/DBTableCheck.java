@@ -36,13 +36,15 @@ public class DBTableCheck {
 			String query = dbTableDTO.getQuery();
 			try {
 				boolean result = stmt.execute(query);
-				System.out.println("result: " + result);
+//				System.out.println("result: " + result);
 				if (!result) {
-					System.out.println("query: " + query + "\n" + 
-							"Query executed successfully.");
+					System.out.println("[EXECUTE QUERY] " + "\n" + query + 
+							"\n" + "Query executed successfully." + "\n");
 				}
 			} catch (SQLException e) {
-				System.out.println(e.getMessage() + "\n");
+				String result = e.getMessage() + "\n";
+				result = result.replace("ERROR: relation", "[CHECK QUERY]");
+				System.out.println(result);
 //				System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
 			}
 		}

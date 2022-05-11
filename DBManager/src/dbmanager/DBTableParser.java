@@ -23,7 +23,9 @@ public class DBTableParser {
 		// XML 문서 파싱
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = builderFactory.newDocumentBuilder();
-		Document document = builder.parse("src/dbmanager/db_schema.xml");
+		
+		Document document = builder.parse("/home/zjeokwa/git/SKT_NMF/NmfServer/ERLGNmfServer/src/main/resources/db_schema.xml");
+//		Document document = builder.parse("db_schema.xml");
 		
 		// root 구하기
 		Element root = document.getDocumentElement();
@@ -45,7 +47,7 @@ public class DBTableParser {
 				DBTableDTO dbTableDTO = new DBTableDTO();
 				
 				if (nodeName.equals("table")) {
-					System.out.println("table: " + element.getAttribute("name"));
+//					System.out.println("table: " + element.getAttribute("name"));
 					String tableName = element.getAttribute("name");
 					dbTableDTO.setName(tableName);
 					
@@ -63,7 +65,7 @@ public class DBTableParser {
 							String textContent = element2.getTextContent().trim();
 							dbTableDTO.setQuery(textContent);
 						}	
-						System.out.println("\n");
+//						System.out.println("\n");
 					}
 				}
 				dbTableList.add(dbTableDTO);

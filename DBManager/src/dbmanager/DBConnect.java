@@ -14,6 +14,7 @@ public enum DBConnect {
 		String user = "epc";
 		String password = "epc";
 		
+		System.out.println("\n");
 		try {
 			Class.forName("org.postgresql.Driver");
 			
@@ -21,15 +22,21 @@ public enum DBConnect {
 			
 			executeTableCheck(conn);
 		} catch (ClassNotFoundException e) {
-			System.err.format("Failed to load postgresql driver.");
+			System.out.println("========================================");
+			System.out.println("= Failed to load postgresql driver ... =");
+			System.out.println("========================================");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		System.out.println("\n");
 	}
 
 	private void executeTableCheck(Connection conn) throws SQLException {
 		if (conn != null) {
-			System.out.println("Connected to the database !!!");
+			System.out.println("====================================================");
+			System.out.println("= The connection to the database is successful !!! =");
+			System.out.println("====================================================");
+			System.out.println("\n");
 			
 			Statement stmt = conn.createStatement();
 			
@@ -39,7 +46,10 @@ public enum DBConnect {
 			stmt.close();
 			conn.close();
 		} else {
-			System.out.println("Failed to make connection ...");
+			System.out.println("=================================");
+			System.out.println("= Failed to make connection ... =");
+			System.out.println("=================================");
+			System.out.println("\n");
 		}
 	}
 
