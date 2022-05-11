@@ -23,7 +23,7 @@ public class DBTableParser {
 		// XML 문서 파싱
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = builderFactory.newDocumentBuilder();
-		Document document = builder.parse("src/test/java/com/ericsson/nmf/ejb/manager/dbmanager/SKT_NMF_TABLE.xml");
+		Document document = builder.parse("src/dbmanager/db_schema.xml");
 		
 		// root 구하기
 		Element root = document.getDocumentElement();

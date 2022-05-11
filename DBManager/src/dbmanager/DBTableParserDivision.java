@@ -23,7 +23,7 @@ public class DBTableParserDivision {
 		// XML ¹®¼­ ÆÄ½Ì
 		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = builderFactory.newDocumentBuilder();
-		Document document = builder.parse("src/test/java/com/ericsson/nmf/ejb/manager/dbmanager/SKT_NMF_TABLE.xml");
+		Document document = builder.parse("src/dbmanager/db_schema.xml");
 		
 		return getDBTableList(dbTableList, document);
 	}
