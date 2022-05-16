@@ -1,4 +1,4 @@
-package com.junit.test.convert;
+package com.junit.test.lotto;
 
 import java.util.Random;
 
