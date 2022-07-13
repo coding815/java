@@ -1,11 +1,11 @@
-package com.junit.test.Future;
+package com.junit.test.future;
 
 import java.time.LocalTime;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import org.junit.Test;
 
-public class CompletableFutureTest2 {
+public class CompletableFutureTest3 {
 
 	@Test
 	public void completableFutureTest() throws InterruptedException, ExecutionException {

@@ -1,4 +1,4 @@
-package com.junit.test.Future;
+package com.junit.test.future;
 
 import java.time.LocalTime;
 import java.util.concurrent.CompletableFuture;
