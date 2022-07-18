@@ -10,7 +10,7 @@
 				managedobject varchar(100) NULL DEFAULT ''::character varying,
 				"location" varchar(200) NULL DEFAULT ''::character varying,
 				hostname varchar(64) NULL DEFAULT ''::character varying,
-				netype int4 NULL DEFAULT 0,
+				netype integer NULL DEFAULT 0,
 				alarmcode varchar(20) NULL DEFAULT ''::character varying,
 				additionalmsg varchar(4000) NULL DEFAULT ''::character varying,
 				ackuser varchar(16) NULL DEFAULT ''::character varying,
@@ -30,6 +30,12 @@
 			CREATE INDEX idx_alarm_04 ON alarm USING btree (hmieventtime);
 			CREATE INDEX idx_alarm_05 ON alarm USING btree (alarmtime);
         </sql>
+        <sql>
+			CREATE SEQUENCE public.alarm_logid_seq
+        		INCREMENT BY 1
+           		MINVALUE 1
+           		MAXVALUE 90000000;
+		</sql>
     </table>
     <table name="eventhistory">
         <sql date="2022-05-10" author="zjeokwa">
@@ -37,11 +43,11 @@
 				logid numeric NULL DEFAULT 0,
 				nodeid numeric NULL DEFAULT 0,
 				"location" varchar(200) NULL DEFAULT ''::character varying,
-				netype int4 NULL DEFAULT 0,
+				netype integer NULL DEFAULT 0,
 				eventid varchar(20) NULL DEFAULT ''::character varying,
 				specificproblem varchar(500) NULL DEFAULT ''::character varying,
-				eventtype int4 NULL DEFAULT 0,
-				"recovery" int4 NULL DEFAULT 0,
+				eventtype integer NULL DEFAULT 0,
+				"recovery" integer NULL DEFAULT 0,
 				eventtypeinfo varchar(15) NULL DEFAULT ''::character varying,
 				ackuser varchar(16) NULL DEFAULT ''::character varying,
 				neeventtime numeric NULL DEFAULT 0,
@@ -55,6 +61,18 @@
 			CREATE INDEX idx_eventhistory_01 ON eventhistory USING btree (hmieventtime);
 			CREATE INDEX idx_eventhistory_02 ON eventhistory USING btree (neeventtime);
         </sql>
+        <sql>
+			CREATE SEQUENCE public.evt_his_seq
+        		INCREMENT BY 1
+           		MINVALUE 1
+           		MAXVALUE 90000000;
+		</sql>
+		<sql>
+			CREATE SEQUENCE public.oss_alarm_seq
+        		INCREMENT BY 1
+           		MINVALUE 1
+           		MAXVALUE 90000000;
+		</sql>
 	</table>
 	<table name="tb_alarm_model">
 		<sql date="2022-05-10" author="zjeokwa">
@@ -79,6 +97,11 @@
 				CONSTRAINT tb_audio_file_pkey PRIMARY KEY (name)
 			);
 		</sql>
+		<sql>
+			INSERT INTO tb_audio_file VALUES ('Critical', 'critical.wav', NULL);
+			INSERT INTO tb_audio_file VALUES ('Major', 'major.wav', NULL);
+			INSERT INTO tb_audio_file VALUES ('Minor', 'minor.wav', NULL);
+		</sql>
 	</table>
 	<table name="tb_batch_command">
 		<sql date="2022-05-10" author="zjeokwa">
@@ -99,7 +122,7 @@
 				batch_group_name varchar(64) NULL DEFAULT NULL::character varying,
 				batch_user varchar(64) NULL DEFAULT NULL::character varying,
 				start_time_str varchar(64) NOT NULL DEFAULT NULL::character varying,
-				command_no int4 NOT NULL,
+				command_no integer NOT NULL,
 				command text NULL DEFAULT NULL::character varying,
 				"result" varchar(64) NULL DEFAULT NULL::character varying,
 				result_output text NULL,
@@ -207,6 +230,860 @@
 				"result" numeric NOT NULL DEFAULT '-1'::integer,
 				result_detail text NULL DEFAULT ''::text,
 				CONSTRAINT tb_network_auto_log_pk PRIMARY KEY (logid)
+			);
+		</sql>
+	</table>
+	<table name="tb_nexentastor_cluster">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_nexentastor_cluster (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL,
+				cluster_name varchar(64) NOT NULL,
+				status varchar(16) NOT NULL,
+				nodes varchar(16) NOT NULL,
+				services varchar(64) NOT NULL,
+				description varchar(256) NULL,
+				CONSTRAINT tb_nexentastor_cluster_pkey PRIMARY KEY (node_id, cluster_name)
+			);
+		</sql>
+	</table>
+	<table name="tb_nexentastor_cpu">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_nexentastor_cpu (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_nexentastor_cpu_pkey PRIMARY KEY (collect_time, node_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_nexentastor_cur_cpu">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_nexentastor_cur_cpu (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_nexentastor_cur_cpu_pkey PRIMARY KEY (node_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_nexentastor_cur_disk">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_nexentastor_cur_disk (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL,
+				category varchar(64) NOT NULL,
+				device varchar(64) NOT NULL,
+				reads_per_second numeric NOT NULL,
+				writes_per_second numeric NOT NULL,
+				kilobytes_read_per_second numeric NOT NULL,
+				kilobytes_written_per_second numeric NOT NULL,
+				CONSTRAINT tb_nexentastor_cur_disk_pkey PRIMARY KEY (node_id, device)
+			);
+		</sql>
+	</table>
+	<table name="tb_nexentastor_cur_memory">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_nexentastor_cur_memory (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL,
+				mem_total varchar(64) NOT NULL,
+				mem_used varchar(64) NOT NULL,
+				total numeric NOT NULL,
+				used numeric NOT NULL,
+				avail numeric NOT NULL,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_nexentastor_cur_memory_pkey PRIMARY KEY (node_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_nexentastor_cur_pool">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_nexentastor_cur_pool (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL,
+				pool_name varchar(64) NOT NULL,
+				pool_size varchar(16) NOT NULL,
+				pool_alloc varchar(16) NOT NULL,
+				pool_free varchar(16) NOT NULL,
+				pool_avail varchar(16) NOT NULL,
+				pool_dedup varchar(16) NULL,
+				pool_expandsz varchar(256) NULL,
+				pool_frag varchar(16) NULL,
+				pool_health varchar(32) NULL,
+				total numeric NOT NULL,
+				used numeric NOT NULL,
+				pfree numeric NOT NULL,
+				avail numeric NOT NULL,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_nexentastor_cur_pool_pkey PRIMARY KEY (node_id, pool_name)
+			);
+		</sql>
+	</table>
+	<table name="tb_nexentastor_disk">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_nexentastor_disk (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL,
+				category varchar(64) NOT NULL,
+				device varchar(64) NOT NULL,
+				reads_per_second numeric NOT NULL,
+				writes_per_second numeric NOT NULL,
+				kilobytes_read_per_second numeric NOT NULL,
+				kilobytes_written_per_second numeric NOT NULL,
+				CONSTRAINT tb_nexentastor_disk_pkey PRIMARY KEY (collect_time, node_id, device)
+			);
+		</sql>
+	</table>
+	<table name="tb_nexentastor_enclosure">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_nexentastor_enclosure (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL,
+				pool varchar(64) NOT NULL,
+				enclosure varchar(32) NOT NULL,
+				model varchar(256) NULL,
+				capacity varchar(64) NULL,
+				status varchar(32) NOT NULL,
+				error_reason varchar(1024) NULL,
+				CONSTRAINT tb_nexentastor_enclosure_pkey PRIMARY KEY (node_id, pool, enclosure)
+			);
+		</sql>
+		<sql date="2022-06-15" author="zjeokwa">
+			ALTER TABLE
+				tb_nexentastor_enclosure
+			ADD COLUMN 
+				enclosure_name varchar(32)
+			DEFAULT
+				'';
+		</sql>
+	</table>
+	<table name="tb_nexentastor_memory">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_nexentastor_memory (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL,
+				mem_total varchar(64) NOT NULL,
+				mem_used varchar(64) NOT NULL,
+				total numeric NOT NULL,
+				used numeric NOT NULL,
+				avail numeric NOT NULL,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_nexentastor_memory_pkey PRIMARY KEY (collect_time, node_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_nexentastor_nodes">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_nexentastor_nodes (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL,
+				node varchar(64) NOT NULL,
+				status varchar(16) NOT NULL,
+				services varchar(16) NOT NULL,
+				ipaddress varchar(16) NOT NULL,
+				host_id varchar(32) NOT NULL,
+				node_release varchar(32) NOT NULL,
+				CONSTRAINT tb_nexentastor_nodes_pkey PRIMARY KEY (node_id, node, ipaddress)
+			);
+		</sql>
+	</table>
+	<table name="tb_nexentastor_pool">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_nexentastor_pool (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL,
+				pool_name varchar(64) NOT NULL,
+				pool_size varchar(16) NOT NULL,
+				pool_alloc varchar(16) NOT NULL,
+				pool_free varchar(16) NOT NULL,
+				pool_avail varchar(16) NOT NULL,
+				pool_dedup varchar(16) NULL,
+				pool_expandsz varchar(256) NULL,
+				pool_frag varchar(16) NULL,
+				pool_health varchar(32) NULL,
+				total numeric NOT NULL,
+				used numeric NOT NULL,
+				pfree numeric NOT NULL,
+				avail numeric NOT NULL,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_nexentastor_pool_pkey PRIMARY KEY (collect_time, node_id, pool_name)
+			);
+		</sql>
+	</table>
+	<table name="tb_nexentastor_pool_threshold">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_nexentastor_pool_threshold (
+				node_id numeric NOT NULL,
+				resource_type numeric NOT NULL,
+				pool_name varchar(64) NOT NULL,
+				critical numeric NOT NULL,
+				major numeric NOT NULL,
+				minor numeric NOT NULL,
+				monitoring numeric NOT NULL DEFAULT 1,
+				CONSTRAINT tb_nexentastor_pool_threshold_pkey PRIMARY KEY (node_id, resource_type, pool_name)
+			);
+		</sql>
+	</table>
+	<table name="tb_node_by_user">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_node_by_user (
+				user_id varchar(16) NOT NULL,
+				node_id numeric NOT NULL
+			);
+			CREATE UNIQUE INDEX tb_node_by_user_u01 ON tb_node_by_user USING btree (user_id, node_id);
+		</sql>
+	</table>
+	<table name="tb_node_info">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_node_info (
+				node_id serial4 NOT NULL,
+				node_name varchar(32) NOT NULL,
+				alias_name varchar(128) NULL,
+				node_type numeric NOT NULL DEFAULT '0'::numeric,
+				ipaddress varchar(32) NOT NULL,
+				port numeric NOT NULL,
+				id varchar(64) NOT NULL,
+				"password" varchar(64) NOT NULL,
+				efa_password varchar(64) NULL,
+				snmp_ipaddress varchar(32) NULL,
+				snmp_port numeric NULL DEFAULT '161'::numeric,
+				snmp_trap_port numeric NOT NULL DEFAULT '162'::numeric,
+				"version" numeric NULL DEFAULT '2'::numeric,
+				community_ro varchar(32) NULL DEFAULT 'public'::character varying,
+				community_rw varchar(32) NULL DEFAULT 'private'::character varying,
+				connection_state numeric NOT NULL DEFAULT '0'::numeric,
+				connection_state_snmp numeric NULL DEFAULT '0'::numeric,
+				uuid varchar(128) NULL DEFAULT NULL::character varying,
+				creation_user varchar(16) NOT NULL,
+				creation_date numeric NOT NULL,
+				modification_date numeric NULL,
+				description varchar(64) NULL DEFAULT ''::character varying,
+				sftp_id varchar(64) NULL,
+				sftp_password varchar(64) NULL,
+				ipaddress2 varchar(32) NULL DEFAULT ''::character varying
+			);
+		</sql>
+	</table>
+	<table name="tb_pm_collect_info">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_pm_collect_info (
+				collect_time varchar(24) NOT NULL,
+				neid varchar(32) NOT NULL,
+				file_name varchar(64) NOT NULL DEFAULT ''::character varying,
+				collect_state numeric NOT NULL DEFAULT 0,
+				CONSTRAINT tb_pm_collect_info_pkey PRIMARY KEY (collect_time, neid, file_name)
+			);
+		</sql>
+	</table>
+	<table name="tb_pm_column_by_user">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_pm_column_by_user (
+				user_id varchar(16) NOT NULL,
+				neid varchar(64) NOT NULL,
+				table_name varchar(255) NOT NULL,
+				column_names varchar(2048) NOT NULL DEFAULT ''::character varying,
+				CONSTRAINT pk_pm_column_by_user PRIMARY KEY (user_id, neid, table_name)
+			);
+		</sql>
+	</table>
+	<table name="tb_pm_tree_info_1m">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_pm_tree_info_1m (
+				neid varchar(64) NOT NULL,
+				pm_item varchar(64) NOT NULL,
+				table_name varchar(64) NOT NULL,
+				first_level varchar(64) NOT NULL,
+				second_level varchar(64) NOT NULL,
+				third_level varchar(64) NULL DEFAULT NULL::character varying,
+				CONSTRAINT tb_pm_tree_info_1m_pkey PRIMARY KEY (neid, pm_item)
+			);
+		</sql>
+	</table>
+	<table name="tb_pm_tree_info_other">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_pm_tree_info_other (
+				neid varchar(64) NOT NULL,
+				pm_item varchar(64) NOT NULL,
+				table_name varchar(64) NOT NULL,
+				first_level varchar(64) NOT NULL,
+				second_level varchar(64) NOT NULL,
+				third_level varchar(64) NULL DEFAULT NULL::character varying,
+				CONSTRAINT tb_pm_tree_info_other_pkey PRIMARY KEY (neid, pm_item)
+			);
+		</sql>
+	</table>
+	<table name="tb_server_cpu">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_server_cpu (
+				collect_time varchar(24) NOT NULL,
+				server_id numeric NOT NULL,
+				usr numeric NULL,
+				nice numeric NOT NULL,
+				"system" numeric NULL,
+				idle numeric NOT NULL,
+				wait numeric NOT NULL,
+				kernel numeric NOT NULL,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_server_cpu_pkey PRIMARY KEY (collect_time, server_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_server_cur_cpu">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_server_cur_cpu (
+				collect_time varchar(24) NOT NULL,
+				server_id numeric NOT NULL,
+				usr numeric NULL,
+				nice numeric NOT NULL,
+				"system" numeric NULL,
+				idle numeric NOT NULL,
+				wait numeric NOT NULL,
+				kernel numeric NOT NULL,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_server_cur_cpu_pkey PRIMARY KEY (collect_time, server_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_server_cur_disk">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_server_cur_disk (
+				collect_time varchar(24) NOT NULL,
+				server_id numeric NOT NULL,
+				ptname varchar(64) NOT NULL,
+				total numeric NOT NULL,
+				used numeric NOT NULL,
+				avail numeric NOT NULL,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_server_cur_disk_pkey PRIMARY KEY (collect_time, server_id, ptname)
+			);
+		</sql>
+	</table>
+	<table name="tb_server_cur_memory">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_server_cur_memory (
+				collect_time varchar(24) NOT NULL,
+				server_id numeric NOT NULL,
+				mem_total numeric NOT NULL,
+				mem_used numeric NOT NULL,
+				swap_total numeric NOT NULL,
+				swap_used numeric NOT NULL,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_server_cur_memory_pkey PRIMARY KEY (collect_time, server_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_server_cur_traffic">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_server_cur_traffic (
+				collect_time varchar(24) NOT NULL,
+				server_id numeric NOT NULL,
+				if_index numeric NOT NULL,
+				if_descr varchar(128) NOT NULL,
+				if_type numeric NOT NULL,
+				mtu numeric NOT NULL,
+				ispeed numeric NOT NULL,
+				phys_address varchar(128) NOT NULL,
+				ipaddress varchar(128) NULL DEFAULT 'NULL::character varying'::character varying,
+				admin_status numeric NOT NULL,
+				oper_status numeric NOT NULL,
+				in_octets numeric NOT NULL,
+				in_ucastpkts numeric NOT NULL,
+				in_nucastpkts numeric NOT NULL,
+				in_discards numeric NOT NULL,
+				in_error numeric NOT NULL,
+				in_unknownprotos numeric NOT NULL,
+				out_octets numeric NOT NULL,
+				out_ucastpkts numeric NOT NULL,
+				out_nucastpkts numeric NOT NULL,
+				out_discards numeric NOT NULL,
+				out_error numeric NOT NULL,
+				bps_tx numeric NOT NULL,
+				bps_rx numeric NOT NULL,
+				pps_tx numeric NOT NULL,
+				pps_rx numeric NOT NULL,
+				CONSTRAINT tb_server_cur_traffic_pkey PRIMARY KEY (collect_time, server_id, if_index, if_descr)
+			);
+		</sql>
+	</table>
+	<table name="tb_server_disk">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_server_disk (
+				collect_time varchar(24) NOT NULL,
+				server_id numeric NOT NULL,
+				ptname varchar(64) NOT NULL,
+				total numeric NOT NULL,
+				used numeric NOT NULL,
+				avail numeric NOT NULL,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_server_disk_pkey PRIMARY KEY (collect_time, server_id, ptname)
+			);
+		</sql>
+	</table>
+	<table name="tb_server_info">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_server_info (
+				server_id numeric NOT NULL,
+				node_id numeric NOT NULL,
+				server_type numeric NOT NULL,
+				server_name varchar(64) NOT NULL,
+				host_name varchar(64) NOT NULL,
+				shelf_number numeric NOT NULL,
+				ipaddress varchar(15) NOT NULL,
+				port numeric NOT NULL DEFAULT '161'::numeric,
+				trap_port numeric NOT NULL DEFAULT '162'::numeric,
+				snmp_version numeric NOT NULL DEFAULT '1'::numeric,
+				snmp_ro_community varchar(32) NOT NULL DEFAULT 'public'::character varying,
+				snmp_rw_community varchar(32) NOT NULL DEFAULT 'private'::character varying,
+				ilo_ipaddress varchar(15) NOT NULL,
+				ilo_port numeric NOT NULL DEFAULT '161'::numeric,
+				ilo_trap_port numeric NOT NULL DEFAULT '162'::numeric,
+				ilo_snmp_version numeric NOT NULL DEFAULT '1'::numeric,
+				ilo_snmp_ro_community varchar(32) NOT NULL DEFAULT 'public'::character varying,
+				ilo_snmp_rw_community varchar(32) NOT NULL DEFAULT 'private'::character varying,
+				state numeric NULL DEFAULT '1'::numeric,
+				ilo_state numeric NULL DEFAULT '1'::numeric,
+				description varchar(128) NULL DEFAULT 'NULL::character varying'::character varying,
+				uuid varchar(128) NULL DEFAULT NULL::character varying,
+				CONSTRAINT tb_server_info_pkey PRIMARY KEY (server_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_server_memory">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_server_memory (
+				collect_time varchar(24) NOT NULL,
+				server_id numeric NOT NULL,
+				mem_total numeric NOT NULL,
+				mem_used numeric NOT NULL,
+				swap_total numeric NOT NULL,
+				swap_used numeric NOT NULL,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_server_memory_pkey PRIMARY KEY (collect_time, server_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_server_threshold">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_server_threshold (
+				server_id numeric NOT NULL,
+				resource_type numeric NOT NULL,
+				item_name varchar(64) NOT NULL,
+				critical numeric NOT NULL,
+				major numeric NOT NULL,
+				minor numeric NOT NULL,
+				monitoring numeric NOT NULL DEFAULT '1'::numeric,
+				CONSTRAINT tb_server_threshold_pkey PRIMARY KEY (server_id, resource_type, item_name)
+			);
+		</sql>
+	</table>
+	<table name="tb_server_traffic">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_server_traffic (
+				collect_time varchar(24) NOT NULL,
+				server_id numeric NOT NULL,
+				if_index numeric NOT NULL,
+				if_descr varchar(128) NOT NULL,
+				if_type numeric NOT NULL,
+				mtu numeric NOT NULL,
+				ispeed numeric NOT NULL,
+				phys_address varchar(128) NOT NULL,
+				ipaddress varchar(128) NULL DEFAULT 'NULL::character varying'::character varying,
+				admin_status numeric NOT NULL,
+				oper_status numeric NOT NULL,
+				in_octets numeric NOT NULL,
+				in_ucastpkts numeric NOT NULL,
+				in_nucastpkts numeric NOT NULL,
+				in_discards numeric NOT NULL,
+				in_error numeric NOT NULL,
+				in_unknownprotos numeric NOT NULL,
+				out_octets numeric NOT NULL,
+				out_ucastpkts numeric NOT NULL,
+				out_nucastpkts numeric NOT NULL,
+				out_discards numeric NOT NULL,
+				out_error numeric NOT NULL,
+				bps_tx numeric NOT NULL,
+				bps_rx numeric NOT NULL,
+				pps_tx numeric NOT NULL,
+				pps_rx numeric NOT NULL,
+				CONSTRAINT tb_server_traffic_pkey PRIMARY KEY (collect_time, server_id, if_index, if_descr)
+			);
+		</sql>
+	</table>
+	<table name="tb_si_cpu">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_si_cpu (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL DEFAULT '0'::numeric,
+				cpucount numeric NULL DEFAULT '0'::numeric,
+				cpumean numeric NULL DEFAULT '0'::numeric,
+				cpupeak numeric NULL DEFAULT '0'::numeric,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_si_cpu_pkey PRIMARY KEY (collect_time, node_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_si_cur_cpu">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_si_cur_cpu (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL DEFAULT '0'::numeric,
+				cpucount numeric NULL DEFAULT '0'::numeric,
+				cpumean numeric NULL DEFAULT '0'::numeric,
+				cpupeak numeric NULL DEFAULT '0'::numeric,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_si_cur_cpu_pkey PRIMARY KEY (node_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_si_cur_memory">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_si_cur_memory (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL DEFAULT '0'::numeric,
+				totalmemory numeric NULL DEFAULT '0'::numeric,
+				usedmemory numeric NULL DEFAULT '0'::numeric,
+				freememory numeric NULL DEFAULT '0'::numeric,
+				reservedmemory numeric NULL DEFAULT '0'::numeric,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_si_cur_memory_pkey PRIMARY KEY (node_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_si_cur_storage">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_si_cur_storage (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL DEFAULT '0'::numeric,
+				storageid varchar(64) NOT NULL,
+				totalstorage numeric NULL DEFAULT '0'::numeric,
+				usedstorage numeric NULL DEFAULT '0'::numeric,
+				availablestorage numeric NULL DEFAULT '0'::numeric,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_si_cur_storage_pkey PRIMARY KEY (node_id, storageid)
+			);
+		</sql>
+	</table>
+	<table name="tb_si_memory">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_si_memory (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL DEFAULT '0'::numeric,
+				totalmemory numeric NULL DEFAULT '0'::numeric,
+				usedmemory numeric NULL DEFAULT '0'::numeric,
+				freememory numeric NULL DEFAULT '0'::numeric,
+				reservedmemory numeric NULL DEFAULT '0'::numeric,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_si_memory_pkey PRIMARY KEY (collect_time, node_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_si_storage">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_si_storage (
+				collect_time varchar(24) NOT NULL,
+				node_id numeric NOT NULL DEFAULT '0'::numeric,
+				storageid varchar(32) NOT NULL,
+				totalstorage numeric NULL DEFAULT '0'::numeric,
+				usedstorage numeric NULL DEFAULT '0'::numeric,
+				availablestorage numeric NULL DEFAULT '0'::numeric,
+				used_rate numeric NOT NULL,
+				CONSTRAINT tb_si_storage_pkey PRIMARY KEY (collect_time, node_id, storageid)
+			);
+		</sql>
+	</table>
+	<table name="tb_si_threshold">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_si_threshold (
+				node_id numeric NOT NULL,
+				resource_type numeric NOT NULL,
+				item_name varchar(64) NOT NULL,
+				critical numeric NOT NULL,
+				major numeric NOT NULL,
+				minor numeric NOT NULL,
+				monitoring numeric NOT NULL DEFAULT '1'::numeric,
+				CONSTRAINT tb_si_threshold_pkey PRIMARY KEY (node_id, resource_type, item_name)
+			);
+		</sql>
+	</table>
+	<table name="tb_siserver_info">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_siserver_info (
+				node_id numeric NOT NULL,
+				virtual_ip varchar(32) NOT NULL,
+				physical_ip varchar(32) NOT NULL,
+				user_id varchar(16) NOT NULL,
+				user_password varchar(256) NOT NULL,
+				postgres_user_id varchar(64) NOT NULL,
+				postgres_password varchar(256) NOT NULL,
+				config_status numeric NOT NULL DEFAULT 0,
+				operation_status numeric NOT NULL DEFAULT 0,
+				description varchar(64) NULL DEFAULT ''::character varying
+			);
+		</sql>
+	</table>
+	<table name="tb_topology_fabric_info">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_topology_fabric_info (
+				fabric_name varchar(32) NOT NULL,
+				fabric_description varchar(256) NULL,
+				fabric_stage varchar(8) NULL DEFAULT NULL::character varying,
+				fabric_type varchar(16) NULL,
+				CONSTRAINT tb_topology_fabric_info_pkey PRIMARY KEY (fabric_name)
+			);
+		</sql>
+	</table>
+	<table name="tb_topology_fabric_switch">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_topology_fabric_switch (
+				fabric_name varchar(32) NOT NULL,
+				ipaddress varchar(32) NOT NULL,
+				host_name varchar(64) NULL,
+				asn varchar(16) NULL,
+				fabric_role varchar(32) NULL,
+				device_state varchar(32) NULL,
+				app_state varchar(32) NULL,
+				config_gen_reason varchar(32) NULL,
+				pending_configs varchar(64) NULL,
+				vtlb_id varchar(8) NULL,
+				lb_id varchar(8) NULL,
+				pod varchar(32) NULL DEFAULT 'NULL::character varying'::character varying,
+				CONSTRAINT tb_topology_fabric_switch_pkey PRIMARY KEY (fabric_name, ipaddress)
+			);
+		</sql>
+	</table>
+	<table name="tb_topology_fabric_switch_link">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_topology_fabric_switch_link (
+				fabric_name varchar(32) NOT NULL,
+				source_node_ip varchar(32) NOT NULL,
+				source_node_role varchar(32) NOT NULL,
+				destination_node_ip varchar(32) NOT NULL,
+				destination_node_role varchar(32) NOT NULL,
+				source_node_interface varchar(16) NOT NULL,
+				destination_node_interface varchar(16) NULL,
+				source_device_multi_homed varchar(8) NULL,
+				destination_device_multi_homed varchar(8) NULL,
+				fabric_switch_link_status varchar(16) NULL DEFAULT NULL::character varying,
+				CONSTRAINT tb_topology_fabric_switch_link_pkey PRIMARY KEY (fabric_name, source_node_ip, destination_node_ip, source_node_interface)
+			);
+		</sql>
+	</table>
+	<table name="tb_topology_server">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_topology_server (
+				server_id serial4 NOT NULL,
+				uuid varchar(128) NOT NULL,
+				server_name varchar(64) NOT NULL,
+				rack_id numeric NULL DEFAULT '-1'::numeric,
+				rack_name varchar(32) NULL DEFAULT ''::character varying,
+				shelf_id numeric NULL DEFAULT '-1'::numeric,
+				manufacturer varchar(32) NULL DEFAULT ''::character varying,
+				model varchar(64) NULL DEFAULT ''::character varying,
+				sku varchar(128) NULL DEFAULT ''::character varying,
+				serial_number varchar(32) NULL DEFAULT ''::character varying,
+				bios_version varchar(32) NULL DEFAULT ''::character varying,
+				custom_name varchar(32) NULL DEFAULT ''::character varying,
+				date_time varchar(24) NULL DEFAULT ''::character varying,
+				CONSTRAINT tb_topology_server_pkey PRIMARY KEY (uuid)
+			);
+		</sql>
+	</table>
+	<table name="tb_topology_server_interface">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_topology_server_interface (
+				interface_name varchar(128) NOT NULL,
+				server_id numeric NOT NULL,
+				mac_address varchar(64) NULL,
+				date_time varchar(24) NULL DEFAULT ''::character varying,
+				CONSTRAINT tb_topology_server_interface_pkey PRIMARY KEY (interface_name, server_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_topology_switch">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_topology_switch (
+				switch_id serial4 NOT NULL,
+				ipaddress varchar(24) NOT NULL,
+				host_name varchar(64) NULL DEFAULT ''::character varying,
+				model varchar(32) NULL DEFAULT ''::character varying,
+				chasis_name varchar(32) NULL DEFAULT ''::character varying,
+				firmware varchar(32) NULL DEFAULT ''::character varying,
+				asn varchar(32) NULL DEFAULT ''::character varying,
+				"role" varchar(32) NULL DEFAULT ''::character varying,
+				fabric varchar(32) NULL DEFAULT ''::character varying,
+				admin_state varchar(32) NULL DEFAULT ''::character varying,
+				date_time varchar(24) NULL DEFAULT ''::character varying,
+				port_name varchar(10) NULL,
+				remote_mac_address varchar(14) NULL,
+				dead_interval integer NULL,
+				remaining_life integer NULL,
+				remote_port_description varchar(48) NULL,
+				chassis_id varchar(14) NULL,
+				tx integer NULL,
+				rx integer NULL,
+				system_name varchar(13) NULL,
+				connection_state numeric NOT NULL DEFAULT 0,
+				CONSTRAINT tb_topology_switch_pkey PRIMARY KEY (ipaddress)
+			);
+		</sql>
+		<sql date="2022-06-30" author="zyoulee">
+			alter table tb_topology_switch add backup_time varchar(64)
+		</sql>
+		<sql date="2022-06-30" author="zyoulee">
+			alter table tb_topology_switch add restore_time varchar(64)
+		</sql>
+	</table>
+	<table name="tb_topology_switch_port">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_topology_switch_port (
+				port_name varchar(64) NOT NULL,
+				switch_id numeric NOT NULL,
+				remote_mac_address varchar(32) NOT NULL,
+				dead_interval numeric NULL DEFAULT '-1'::numeric,
+				remaining_life numeric NULL DEFAULT '-1'::numeric,
+				remote_port_description varchar(128) NULL DEFAULT ''::character varying,
+				chassis_id varchar(24) NULL DEFAULT ''::character varying,
+				tx numeric NULL DEFAULT '-1'::numeric,
+				rx numeric NULL DEFAULT '-1'::numeric,
+				system_name varchar(64) NULL DEFAULT ''::character varying,
+				date_time varchar(24) NULL DEFAULT ''::character varying,
+				CONSTRAINT tb_toplogy_switch_port_pkey PRIMARY KEY (port_name, switch_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_topology_switch_port_alarm">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_topology_switch_port_alarm (
+				switch_ipaddress varchar(24) NOT NULL,
+				interface_name varchar(64) NOT NULL,
+				interface_ipaddress varchar(24) NULL DEFAULT ''::character varying,
+				vrf varchar(64) NULL DEFAULT ''::character varying,
+				status varchar(64) NULL DEFAULT ''::character varying,
+				protocol varchar(64) NULL DEFAULT ''::character varying,
+				date_time varchar(24) NULL DEFAULT ''::character varying,
+				CONSTRAINT tb_topology_switch_port_alarm_pkey PRIMARY KEY (switch_ipaddress, interface_name)
+			);
+		</sql>
+	</table>
+	<table name="tb_topology_switch_port_status">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_topology_switch_port_status (
+				port_name varchar(64) NOT NULL,
+				switch_id numeric NOT NULL,
+				status varchar(32) NULL DEFAULT ''::character varying,
+				"mode" varchar(32) NULL DEFAULT ''::character varying,
+				speed varchar(32) NULL DEFAULT ''::character varying,
+				"type" varchar(32) NULL DEFAULT ''::character varying,
+				description varchar(128) NULL DEFAULT ''::character varying,
+				date_time varchar(24) NULL DEFAULT ''::character varying,
+				CONSTRAINT tb_toplogy_switch_port_status_pkey PRIMARY KEY (port_name, switch_id)
+			);
+		</sql>
+	</table>
+	<table name="tb_user">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_user (
+				user_id varchar(16) NOT NULL,
+				user_group varchar(16) NOT NULL,
+				ip_address varchar(24) NOT NULL,
+				last_logined varchar(20) NULL,
+				user_state varchar(16) NOT NULL DEFAULT 'LOGOUT'::character varying,
+				"password" varchar(32) NOT NULL,
+				client_type varchar(1) NULL DEFAULT 2,
+				expired_date numeric NULL DEFAULT 0,
+				creation_user varchar(16) NULL,
+				creation_date numeric NOT NULL DEFAULT 0,
+				modification_date numeric NULL DEFAULT 0,
+				controlnes varchar(512) NULL,
+				description varchar(128) NULL,
+				CONSTRAINT tb_user_pkey PRIMARY KEY (user_id)
+			);
+		</sql>
+ 		<sql date="2022-06-28" author="zjeokwa">
+			INSERT INTO 
+				tb_user 
+			VALUES (
+				'nmsadm', 
+				'ADMIN', 
+				'10.180.92.250', 
+				'2021-10-12 18:52', 
+				'LOGOUT', 
+				'nmsadm', 
+				'0', 
+				1580001038981, 
+				'nmsadm', 
+				1572225038978, 
+				1587715207122, 
+				'ALL', 
+				'super user'
+				);
+		</sql>
+	</table>
+	<table name="tb_user_account_complexity">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_user_account_complexity (
+				id_min_len numeric NULL DEFAULT 6,
+				id_max_len numeric NULL DEFAULT 14,
+				passwd_min_len numeric NULL DEFAULT 8,
+				passwd_max_len numeric NULL DEFAULT 14,
+				rule1 numeric NULL DEFAULT 0,
+				rule2 numeric NULL DEFAULT 0,
+				rule3 numeric NULL DEFAULT 0,
+				rule4 numeric NULL DEFAULT 0,
+				passwd_must_not varchar(300) NULL DEFAULT ''::character varying,
+				passwd_aging_exp numeric NULL DEFAULT 30,
+				passwd_aging_used numeric NULL DEFAULT 0
+			);
+		</sql>
+		<sql>
+			INSERT INTO 
+				tb_user_account_complexity 
+			VALUES 
+				(6, 14, 8, 14, 0, 0, 0, 0, NULL, 200, 0);
+		</sql>
+	</table>
+	<table name="tb_user_history">
+		<sql date="2022-05-10" author="zjeokwa">
+			CREATE TABLE public.tb_user_history (
+				history_no numeric NOT NULL,
+				user_id varchar(16) NOT NULL,
+				ip_address varchar(24) NOT NULL,
+				login_time numeric NOT NULL,
+				logout_time numeric NULL DEFAULT 0,
+				logout_type varchar(64) NULL DEFAULT NULL::character varying
+			);
+		</sql>
+		<sql>
+			CREATE SEQUENCE public.user_history_no_seq
+        		INCREMENT BY 1
+           		MINVALUE 1
+           		MAXVALUE 90000000;
+		</sql>
+	</table>
+	<table name="tb_dbsync_history">
+		<sql date="2022-06-21" author="zyoulee">
+			CREATE TABLE public.tb_dbsync_history (
+				efa_id              numeric     not null,
+				switch_id           numeric     not null,
+				switch_name         varchar(64) default ''::character varying,
+				switch_ip           varchar(24) not null,
+				category      numeric       not null,
+				user_id       varchar(32)   not null,
+				result        numeric       not null,
+				execute_time  timestamp default now(),
+				result_detail text      default ''::text
+			);
+		</sql>
+	</table>
+	<table name="tb_hmi_parameter">
+		<sql date="2022-07-08" author="zyoulee">
+			CREATE TABLE public.tb_hmi_parameter (
+				efa_id 			numeric NOT NULL,
+				parameter 		varchar(128) NOT NULL,
+				collect_date 	timestamp NOT NULL,
+				raw          	text NOT NULL,
+				CONSTRAINT tb_hmi_parameter_pkey PRIMARY KEY (efa_id, parameter)
 			);
 		</sql>
 	</table>

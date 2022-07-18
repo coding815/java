@@ -1,4 +1,4 @@
-package dbmanager;
+package DBManagerPreview;
 
 import java.io.IOException;
 import java.util.ArrayList;

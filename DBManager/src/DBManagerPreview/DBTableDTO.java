@@ -1,4 +1,4 @@
-package dbmanager;
+package DBManagerPreview;
 
 public class DBTableDTO {
 	
